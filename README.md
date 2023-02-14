@@ -1,66 +1,83 @@
 # API-Chacker
-Introduction
-APIs, or Application Programming Interfaces, are an essential part of modern software development. APIs allow different software applications to communicate with each other and exchange data. When developing an API, it's essential to test it thoroughly to ensure that it's working correctly and returning the expected results. This is where automated testing comes in.
-In this article, we'll introduce a Python script that automates the process of testing APIs and checking the status code of each request. This script can be used to quickly and easily test your APIs and ensure that they are up and running smoothly.
-Script Overview
-The API testing script is a Python script that reads a list of API URLs from a text file, makes a GET request to each URL, and checks the status code of the response. If the API is up and running, the script will print a message saying so. If the API is down or returns an error, the script will print a message with the status code of the response and provide information on what the status code means and how to fix it.
-The script is designed to be simple and easy to use, even for those who are new to Python or automated testing. In the following sections, we'll provide a step-by-step guide on how to use the script to test your APIs.
-Requirements
-To use the API testing script, you'll need the following:
-Python 3.x
-The requests library
+Automated testing is an important part of software development. It allows developers to quickly and efficiently check the functionality of their applications. In this article, we'll show you how to create a Python script to automate testing of API endpoints.
 
-You can install the requests library using pip:
+API Endpoint Testing
+
+API endpoint testing is a process that verifies that an API endpoint returns the expected response for a given request. The expected response can be based on the input parameters, the HTTP status code, or the response data. To test an API endpoint, we send a request to it with a specific set of input parameters and check the response it returns.
+
+Python for API Endpoint Testing
+
+Python is a great language for API endpoint testing. It has a wide range of libraries that can be used to send HTTP requests and parse the responses. Some popular Python libraries for sending HTTP requests are requests, httplib2, and urllib3. These libraries provide a simple and intuitive way to send HTTP requests.
+
+Creating the Python Script
+
+To create the Python script, we'll be using the requests library. It is a popular library for sending HTTP requests in Python. Here are the steps to follow:
+
+Step 1: Install the Requests Library
+
+To install the requests library, run the following command in your terminal:
+
+Copy code
 pip install requests
-Step 1: Create a Text File with API URLs
-The first step in using the API testing script is to create a text file named api_urls.txt. This file should contain a list of API URLs that you want to test, with each URL on a new line.
-For example, suppose you want to test the following APIs:
-https://api.example.com/v1/users
-https://api.example.com/v1/orders
-https://api.example.com/v1/products
+Step 2: Define the API Endpoint URLs
 
-In that case, your api_urls.txt file should look like this:
-https://api.example.com/v1/users
-https://api.example.com/v1/orders
-https://api.example.com/v1/products
-Make sure that the api_urls.txt file is in the same directory as the API testing script.
-Step 2: (Optional) Create a Text File with an Access Token
-If the APIs you're testing require an access token to access, you'll need to create a text file named access_token.txt. This file should contain the access token that you want to use, with no extra characters or whitespace.
-For example, suppose your access token is:
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+Create a file named api_urls.txt in the same directory as the Python script. In this file, list all the API endpoint URLs that you want to test, with each URL on a new line.
 
-In that case, your access_token.txt file should look like this:
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF
-Reading API URLs from a Text File
-The first step in automating API testing is to read a list of API URLs from a text file. Here is an example of how to do that using Python:
-with open('api_urls.txt') as file:
-    api_urls = [line.strip() for line in file if line.strip()]
-In this code snippet, we use the built-in open() function to open a file named api_urls.txt. We then use a list comprehension to iterate over each line in the file and strip off any leading or trailing whitespace. We also check if the line is not empty by using the if line.strip() condition. The resulting list of URLs is stored in the api_urls variable.
-If the api_urls.txt file is empty, the code above will not produce any results. Therefore, it's a good practice to add a check to ensure that the list of API URLs is not empty. Here's how to do that:
-if not api_urls:
-    print('The file containing API URLs is empty. Please provide at least one URL.')
-    exit()
-This code snippet checks if the api_urls list is empty and prints an error message if it is. It then exits the program using the exit() function.
-Checking HTTP Status Codes
-Once we have the list of API URLs, the next step is to send HTTP requests to each URL and check the HTTP status code returned. Here is an example of how to do that using Python:
+ruby
+Copy code
+https://example.com/api/endpoint1
+https://example.com/api/endpoint2
+https://example.com/api/endpoint3
+Step 3: Define the Access Token
+
+If your API requires an access token, create a file named access_token.txt in the same directory as the Python script. In this file, enter your access token.
+
+Copy code
+ABC123DEF456GHI789
+Step 4: Write the Python Script
+
+Create a new Python file and name it api_test.py. Copy and paste the following code into the file:
+
+python
+Copy code
 import requests
 
-access_token = '<YOUR_ACCESS_TOKEN>' # Replace with your actual access token or use the file reading method shown earlier
+# Open the API URLs file and read the URLs
+with open('api_urls.txt', 'r') as file:
+    api_urls = [line.strip() for line in file if line.strip()]
 
-for i, url in enumerate(api_urls):
-    headers = {'Authorization': f'Bearer {access_token}'} if access_token else {}
+# If the file is empty, print an error message and exit
+if not api_urls:
+    print('Error: API URLs file is empty.')
+    exit()
+
+# Open the access token file and read the token
+try:
+    with open('access_token.txt', 'r') as file:
+        access_token = file.read().strip()
+except FileNotFoundError:
+    access_token = None
+
+# Loop through the API URLs
+for index, url in enumerate(api_urls, start=1):
+    headers = {}
+    if access_token:
+        headers['Authorization'] = f'Bearer {access_token}'
+
+    # Send the HTTP request and get the response
     response = requests.get(url, headers=headers)
-    status_code = response.status_code
 
-    if status_code == 200:
-        print(f'{i+1}. {url} is up and running.')
-    elif status_code == 401:
-        print(f'{i+1}. {url} is down. Access denied. Please check your access token.')
-    elif status_code == 404:
-        print(f'{i+1}. {url} is down. Resource not found.')
-    else:
-        print(f'{i+1}. {url} returned an unexpected status code: {status_code}')
-In this code snippet, we first import the requests library, which is a simple HTTP library for Python. We then define an access_token variable, which contains the API access token. You can replace the string with your actual access token or use the file reading method.
+    # Check the HTTP status code
+    if response.status_code == 200:
+        print(f'{index}. {url}: OK')
+    elif response.status_code == 400:
+        print(f'{index}. {url}: Bad Request - The server could not understand the request.')
+    elif response.status_code == 401:
+        print(f'{index}. {url}: Unauthorized - The request requires user authentication.')
+    elif response.status_code == 403:
+        print(f'{index}. {url}: Forbidden - The server understood the request, but is refusing to fulfill it.')
+    elif response.status_code == 404:
+        print(f'{index}. {
 
 © Mejbaur Bahar Fagun
 🔀 𝐂𝐨𝐧𝐧𝐞𝐜𝐭 𝐖𝐢𝐭𝐡 𝐌𝐞
